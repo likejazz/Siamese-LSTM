@@ -14,6 +14,9 @@ It is Keras implementation based on [Original Paper(PDF)](http://www.mit.edu/~jo
 - Data
     - [GoogleNews-vectors-negative300.bin.gz](https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing)
     - [Kaggle's Quora Question Pairs Dataset](https://www.kaggle.com/c/quora-question-pairs/data)
+- References
+    - [aditya1503/Siamese-LSTM](https://github.com/aditya1503/Siamese-LSTM) Original author's GitHub
+    - [dhwajraj/deep-siamese-text-similarity](https://github.com/dhwajraj/deep-siamese-text-similarity) TensorFlow based implementation
 
 Kaggle's `test.csv` is too big, so I had extracted only the top 20 questions and created a file called `test-20.csv` and It is used in the `predict.py`.
 
