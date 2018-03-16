@@ -2,12 +2,14 @@ import re
 
 import keras.backend as K
 from keras.engine.topology import Layer
+from keras.preprocessing.sequence import pad_sequences
 
+from nltk.corpus import stopwords
 from gensim.models import KeyedVectors
 
 import numpy as np
 
-from nltk.corpus import stopwords
+import itertools
 
 
 def text_to_word_list(text):
@@ -102,6 +104,17 @@ def make_w2v_embeddings(df, file, embedding_dim=300):
     del word2vec
 
     return df, embeddings
+
+
+def split_and_zero_padding(df, max_seq_length):
+    # Split to dicts
+    X = {'left': df['question1_n'], 'right': df['question2_n']}
+
+    # Zero padding
+    for dataset, side in itertools.product([X], ['left', 'right']):
+        dataset[side] = pad_sequences(dataset[side], padding='pre', truncating='post', maxlen=max_seq_length)
+
+    return dataset
 
 
 #  --

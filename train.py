@@ -1,21 +1,15 @@
 from time import time
 import pandas as pd
-import numpy as np
-import sys
 
 from sklearn.model_selection import train_test_split
 
-import itertools
-import datetime
-
 import keras
 
-from keras.preprocessing.sequence import pad_sequences
 from keras.models import Model
 from keras.layers import Input, Embedding, LSTM
 
-import util
 from util import make_w2v_embeddings
+from util import split_and_zero_padding
 from util import ManDist
 
 # File paths
@@ -41,17 +35,12 @@ Y = train_df['is_duplicate']
 
 X_train, X_validation, Y_train, Y_validation = train_test_split(X, Y, test_size=validation_size)
 
-# Split to dicts
-X_train = {'left': X_train.question1_n, 'right': X_train.question2_n}
-X_validation = {'left': X_validation.question1_n, 'right': X_validation.question2_n}
+X_train = split_and_zero_padding(X_train, max_seq_length)
+X_validation = split_and_zero_padding(X_validation, max_seq_length)
 
 # Convert labels to their numpy representations
 Y_train = Y_train.values
 Y_validation = Y_validation.values
-
-# Zero padding
-for dataset, side in itertools.product([X_train, X_validation], ['left', 'right']):
-    dataset[side] = pad_sequences(dataset[side], padding='pre', truncating='post', maxlen=max_seq_length)
 
 # Make sure everything is ok
 assert X_train['left'].shape == X_train['right'].shape
@@ -62,7 +51,7 @@ assert len(X_train['left']) == len(Y_train)
 # Model variables
 n_hidden = 50
 batch_size = 128
-n_epoch = 10
+n_epoch = 50
 
 # The visible layer
 left_input = Input(shape=(max_seq_length,), dtype='int32')
@@ -92,7 +81,6 @@ model.summary()
 
 # Start training
 training_start_time = time()
-
 malstm_trained = model.fit([X_train['left'], X_train['right']], Y_train,
                            batch_size=batch_size, epochs=n_epoch,
                            validation_data=([X_validation['left'], X_validation['right']], Y_validation))

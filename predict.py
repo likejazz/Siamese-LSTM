@@ -7,10 +7,9 @@ import itertools
 import datetime
 
 from keras.models import load_model
-from keras.preprocessing.sequence import pad_sequences
 
-import util
 from util import make_w2v_embeddings
+from util import split_and_zero_padding
 from util import ManDist
 
 # File paths
@@ -27,12 +26,8 @@ embedding_dim = 300
 max_seq_length = 20
 test_df, embeddings = make_w2v_embeddings(test_df, file=EMBEDDING_FILE, embedding_dim=embedding_dim)
 
-# Split to dicts
-X_test = {'left': test_df['question1_n'], 'right': test_df['question2_n']}
-
-# Zero padding
-for dataset, side in itertools.product([X_test], ['left', 'right']):
-    dataset[side] = pad_sequences(dataset[side], padding='pre', truncating='post', maxlen=max_seq_length)
+# Split to dicts and append zero padding.
+X_test = split_and_zero_padding(test_df, max_seq_length)
 
 # Make sure everything is ok
 assert X_test['left'].shape == X_test['right'].shape
