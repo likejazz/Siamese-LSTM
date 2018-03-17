@@ -50,7 +50,7 @@ assert len(X_train['left']) == len(Y_train)
 # --
 
 # Model variables
-batch_size = 256
+batch_size = 2056
 n_epoch = 50
 
 # The visible layer
@@ -66,17 +66,17 @@ encoded_left = embedding_layer(left_input)
 encoded_right = embedding_layer(right_input)
 
 # Since this is a siamese network, both sides share the same LSTM
-SharedLSTM = LSTM(50)
+shared_lstm = LSTM(50)
 
-left_output = SharedLSTM(encoded_left)
-right_output = SharedLSTM(encoded_right)
+left_output = shared_lstm(encoded_left)
+right_output = shared_lstm(encoded_right)
 
 malstm_distance = ManDist()([left_output, right_output])
 
 # Pack it all up into a model
 model = Model(inputs=[left_input, right_input], outputs=[malstm_distance])
-model = multi_gpu_model(model, gpus=2)
 
+model = multi_gpu_model(model, gpus=2)
 model.compile(loss='mean_squared_error', optimizer=keras.optimizers.Adam(), metrics=['accuracy'])
 model.summary()
 
