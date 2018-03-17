@@ -50,9 +50,9 @@ assert len(X_train['left']) == len(Y_train)
 # --
 
 # Model variables
-gpus = 1
+gpus = 2
 batch_size = 1024 * gpus
-n_epoch = 1
+n_epoch = 50
 
 # The visible layer
 left_input = Input(shape=(max_seq_length,), dtype='int32')
