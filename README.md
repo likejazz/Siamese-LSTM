@@ -35,10 +35,12 @@ $ python3 predict.py
 ```
 
 ## The Results
-I have tried with various parameters such as number of hidden states of LSTM cell, activation function of LSTM cell and repeated count of epochs. As a result, I have reached about 83% accuracy.
+I have tried with various parameters such as number of hidden states of LSTM cell, activation function of LSTM cell and repeated count of epochs. As a result, I have reached about 82.25% accuracy after 150 epochs 6h 22m later. 
 
 ```
-363861/363861 [==============================] - 1591s 4ms/step - loss: 0.1159 - acc: 0.8457 - val_loss: 0.1257 - val_acc: 0.8293
+363861/363861 [==============================] - 162s 444us/step - loss: 0.0857 - acc: 0.8993 - val_loss: 0.1345 - val_acc: 0.8225
+Training time finished.
+150 epochs in     22965.92
 ```
 
 Training time(NVIDIA Tesla P40 GPU) per 1 epoch(max seq length=20) is *2min 23secs*, 10% data was used as the validation set.
