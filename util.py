@@ -73,7 +73,7 @@ def make_w2v_embeddings(df, file, embedding_dim=300, empty_w2v=False):
 
     for index, row in df.iterrows():
         # Print the number of embedded sentences.
-        if index % 1000 == 0:
+        if index != 0 and index % 1000 == 0:
             print("{:,} sentences embedded.".format(index), flush=True)
 
         # Iterate through the text of both questions of the row
