@@ -36,8 +36,8 @@ $ python3 predict.py
 
 ## The Results
 I have tried with various parameters such as number of hidden states of LSTM cell, activation function of LSTM cell and repeated count of epochs.
-I have used NVIDIA Tesla P40 GPU x 2 for training and 10% data was used as the validation set.
-As a result, I have reached about 82.29% accuracy after 50 epochs about 10 min later.
+I have used NVIDIA Tesla P40 GPU x 2 for training and 10% data was used as the validation set(batch size=1024*2).
+As a result, I have reached about 82.29% accuracy after 50 epochs about 10 mins later.
 
 ```
 Epoch 50/50

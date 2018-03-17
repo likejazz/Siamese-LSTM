@@ -1,12 +1,6 @@
-from time import time
 import pandas as pd
-import numpy as np
-import sys
 
-import itertools
-import datetime
-
-from keras.models import load_model
+import tensorflow as tf
 
 from util import make_w2v_embeddings
 from util import split_and_zero_padding
@@ -24,7 +18,8 @@ for q in ['question1', 'question2']:
 # Make word2vec embeddings
 embedding_dim = 300
 max_seq_length = 20
-test_df, embeddings = make_w2v_embeddings(test_df, file=EMBEDDING_FILE, embedding_dim=embedding_dim)
+test_df, embeddings = make_w2v_embeddings(test_df, file=EMBEDDING_FILE,
+                                          embedding_dim=embedding_dim, empty_w2v=False)
 
 # Split to dicts and append zero padding.
 X_test = split_and_zero_padding(test_df, max_seq_length)
@@ -34,7 +29,7 @@ assert X_test['left'].shape == X_test['right'].shape
 
 # --
 
-model = load_model('./data/malstm.h5', custom_objects={'ManDist': ManDist})
+model = tf.keras.models.load_model('./data/malstm.h5', custom_objects={'ManDist': ManDist})
 model.summary()
 
 prediction = model.predict([X_test['left'], X_test['right']])

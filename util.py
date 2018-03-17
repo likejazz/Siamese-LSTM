@@ -1,8 +1,8 @@
 import re
 
-import keras.backend as K
-from keras.engine.topology import Layer
-from keras.preprocessing.sequence import pad_sequences
+from tensorflow.python.keras import backend as K
+from tensorflow.python.keras.layers import Layer
+from tensorflow.python.keras.preprocessing.sequence import pad_sequences
 
 from nltk.corpus import stopwords
 from gensim.models import KeyedVectors
@@ -13,7 +13,7 @@ import itertools
 
 
 def text_to_word_list(text):
-    ''' Pre process and convert texts to a list of words '''
+    # Pre process and convert texts to a list of words
     text = str(text)
     text = text.lower()
 
@@ -53,7 +53,7 @@ def text_to_word_list(text):
     return text
 
 
-def make_w2v_embeddings(df, file, embedding_dim=300):
+def make_w2v_embeddings(df, file, embedding_dim=300, empty_w2v=False):
     vocabs = {}
     vocabs_cnt = 0
 
@@ -65,9 +65,17 @@ def make_w2v_embeddings(df, file, embedding_dim=300):
 
     # Load word2vec
     print("Loading word2vec model(it may takes 2-3 mins) ...")
-    word2vec = KeyedVectors.load_word2vec_format(file, binary=True)
+
+    if empty_w2v:
+        word2vec = EmptyWord2Vec
+    else:
+        word2vec = KeyedVectors.load_word2vec_format(file, binary=True)
 
     for index, row in df.iterrows():
+        # Print the number of embedded sentences.
+        if index % 1000 == 0:
+            print("{:,} sentences embedded.".format(index), flush=True)
+
         # Iterate through the text of both questions of the row
         for question in ['question1', 'question2']:
 
@@ -141,3 +149,11 @@ class ManDist(Layer):
     # return output shape
     def compute_output_shape(self, input_shape):
         return K.int_shape(self.result)
+
+
+class EmptyWord2Vec:
+    """
+    Just for test use.
+    """
+    vocab = {}
+    word_vec = {}

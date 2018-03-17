@@ -3,11 +3,10 @@ import pandas as pd
 
 from sklearn.model_selection import train_test_split
 
-import keras
+import tensorflow as tf
 
-from keras.models import Model
-from keras.layers import Input, Embedding, LSTM, GRU
-from keras.utils.training_utils import multi_gpu_model
+from tensorflow.python.keras.models import Model
+from tensorflow.python.keras.layers import Input, Embedding, LSTM, GRU
 
 from util import make_w2v_embeddings
 from util import split_and_zero_padding
@@ -25,7 +24,8 @@ for q in ['question1', 'question2']:
 # Make word2vec embeddings
 embedding_dim = 300
 max_seq_length = 20
-train_df, embeddings = make_w2v_embeddings(train_df, file=EMBEDDING_FILE, embedding_dim=embedding_dim)
+train_df, embeddings = make_w2v_embeddings(train_df, file=EMBEDDING_FILE,
+                                           embedding_dim=embedding_dim, empty_w2v=False)
 
 # Split to train validation
 validation_size = int(len(train_df) * 0.1)
@@ -50,8 +50,9 @@ assert len(X_train['left']) == len(Y_train)
 # --
 
 # Model variables
-batch_size = 2056
-n_epoch = 50
+gpus = 1
+batch_size = 1024 * gpus
+n_epoch = 1
 
 # The visible layer
 left_input = Input(shape=(max_seq_length,), dtype='int32')
@@ -76,8 +77,10 @@ malstm_distance = ManDist()([left_output, right_output])
 # Pack it all up into a model
 model = Model(inputs=[left_input, right_input], outputs=[malstm_distance])
 
-model = multi_gpu_model(model, gpus=2)
-model.compile(loss='mean_squared_error', optimizer=keras.optimizers.Adam(), metrics=['accuracy'])
+if gpus >= 2:
+    # `multi_gpu_model()` is a so quite buggy. it breaks the saved model.
+    model = tf.keras.utils.multi_gpu_model(model, gpus=gpus)
+model.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(), metrics=['accuracy'])
 model.summary()
 
 # Start trainings
