@@ -8,7 +8,6 @@ from util import ManDist
 
 # File paths
 TEST_CSV = './data/test-20.csv'
-EMBEDDING_FILE = './data/GoogleNews-vectors-negative300.bin.gz'
 
 # Load training set
 test_df = pd.read_csv(TEST_CSV)
@@ -18,8 +17,7 @@ for q in ['question1', 'question2']:
 # Make word2vec embeddings
 embedding_dim = 300
 max_seq_length = 20
-test_df, embeddings = make_w2v_embeddings(test_df, file=EMBEDDING_FILE,
-                                          embedding_dim=embedding_dim, empty_w2v=False)
+test_df, embeddings = make_w2v_embeddings(test_df, embedding_dim=embedding_dim, empty_w2v=True)
 
 # Split to dicts and append zero padding.
 X_test = split_and_zero_padding(test_df, max_seq_length)
@@ -29,7 +27,7 @@ assert X_test['left'].shape == X_test['right'].shape
 
 # --
 
-model = tf.keras.models.load_model('./data/malstm.h5', custom_objects={'ManDist': ManDist})
+model = tf.keras.models.load_model('./data/SiameseLSTM.h5', custom_objects={'ManDist': ManDist})
 model.summary()
 
 prediction = model.predict([X_test['left'], X_test['right']])

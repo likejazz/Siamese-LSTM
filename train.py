@@ -14,7 +14,6 @@ from util import ManDist
 
 # File paths
 TRAIN_CSV = './data/train.csv'
-EMBEDDING_FILE = './data/GoogleNews-vectors-negative300.bin.gz'
 
 # Load training set
 train_df = pd.read_csv(TRAIN_CSV)
@@ -24,8 +23,9 @@ for q in ['question1', 'question2']:
 # Make word2vec embeddings
 embedding_dim = 300
 max_seq_length = 20
-train_df, embeddings = make_w2v_embeddings(train_df, file=EMBEDDING_FILE,
-                                           embedding_dim=embedding_dim, empty_w2v=False)
+use_w2v = True
+
+train_df, embeddings = make_w2v_embeddings(train_df, embedding_dim=embedding_dim, empty_w2v=not use_w2v)
 
 # Split to train validation
 validation_size = int(len(train_df) * 0.1)
@@ -53,6 +53,7 @@ assert len(X_train['left']) == len(Y_train)
 gpus = 2
 batch_size = 1024 * gpus
 n_epoch = 50
+n_hidden = 50
 
 # The visible layer
 left_input = Input(shape=(max_seq_length,), dtype='int32')
@@ -67,7 +68,7 @@ encoded_left = embedding_layer(left_input)
 encoded_right = embedding_layer(right_input)
 
 # Since this is a siamese network, both sides share the same LSTM
-shared_lstm = LSTM(50)
+shared_lstm = LSTM(n_hidden)
 
 left_output = shared_lstm(encoded_left)
 right_output = shared_lstm(encoded_right)
@@ -92,5 +93,5 @@ training_end_time = time()
 print("Training time finished.\n%d epochs in %12.2f" % (n_epoch,
                                                         training_end_time - training_start_time))
 
-model.save('./data/malstm.h5')
+model.save('./data/SiameseLSTM.h5')
 print("Done.")

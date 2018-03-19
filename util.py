@@ -7,6 +7,8 @@ from tensorflow.python.keras.preprocessing.sequence import pad_sequences
 from nltk.corpus import stopwords
 from gensim.models import KeyedVectors
 
+import gensim
+
 import numpy as np
 
 import itertools
@@ -53,7 +55,7 @@ def text_to_word_list(text):
     return text
 
 
-def make_w2v_embeddings(df, file, embedding_dim=300, empty_w2v=False):
+def make_w2v_embeddings(df, embedding_dim=300, empty_w2v=False):
     vocabs = {}
     vocabs_cnt = 0
 
@@ -69,7 +71,8 @@ def make_w2v_embeddings(df, file, embedding_dim=300, empty_w2v=False):
     if empty_w2v:
         word2vec = EmptyWord2Vec
     else:
-        word2vec = KeyedVectors.load_word2vec_format(file, binary=True)
+        word2vec = KeyedVectors.load_word2vec_format("./data/GoogleNews-vectors-negative300.bin.gz", binary=True)
+        # word2vec = gensim.models.word2vec.Word2Vec.load("./data/Quora-Question-Pairs.w2v").wv
 
     for index, row in df.iterrows():
         # Print the number of embedded sentences.
