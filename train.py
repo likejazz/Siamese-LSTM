@@ -1,6 +1,11 @@
 from time import time
 import pandas as pd
 
+import matplotlib
+
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
 from sklearn.model_selection import train_test_split
 
 import tensorflow as tf
@@ -94,4 +99,26 @@ print("Training time finished.\n%d epochs in %12.2f" % (n_epoch,
                                                         training_end_time - training_start_time))
 
 model.save('./data/SiameseLSTM.h5')
+
+# Plot accuracy
+plt.subplot(211)
+plt.plot(malstm_trained.history['acc'])
+plt.plot(malstm_trained.history['val_acc'])
+plt.title('Model Accuracy')
+plt.ylabel('Accuracy')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Validation'], loc='upper left')
+
+# Plot loss
+plt.subplot(212)
+plt.plot(malstm_trained.history['loss'])
+plt.plot(malstm_trained.history['val_loss'])
+plt.title('Model Loss')
+plt.ylabel('Loss')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Validation'], loc='upper right')
+
+plt.tight_layout(h_pad=1.0)
+plt.savefig('./data/history-graph.png')
+
 print("Done.")
