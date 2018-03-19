@@ -7,7 +7,7 @@ logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=lo
 
 def extract_questions():
     """
-    extract questions for making word2vec model.
+    Extract questions for making word2vec model.
     """
     df1 = pd.read_csv("./data/train.csv")
     df2 = pd.read_csv("./data/test.csv")
