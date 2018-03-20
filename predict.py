@@ -17,7 +17,7 @@ for q in ['question1', 'question2']:
 # Make word2vec embeddings
 embedding_dim = 300
 max_seq_length = 20
-test_df, embeddings = make_w2v_embeddings(test_df, embedding_dim=embedding_dim, empty_w2v=True)
+test_df, embeddings = make_w2v_embeddings(test_df, embedding_dim=embedding_dim, empty_w2v=False)
 
 # Split to dicts and append zero padding.
 X_test = split_and_zero_padding(test_df, max_seq_length)
