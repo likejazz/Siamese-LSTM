@@ -10,8 +10,8 @@ from sklearn.model_selection import train_test_split
 
 import tensorflow as tf
 
-from tensorflow.python.keras.models import Model
-from tensorflow.python.keras.layers import Input, Embedding, LSTM, GRU
+from tensorflow.python.keras.models import Model, Sequential
+from tensorflow.python.keras.layers import Input, Embedding, LSTM, GRU, Conv1D, Conv2D, GlobalMaxPool1D, Dense, Dropout
 
 from util import make_w2v_embeddings
 from util import split_and_zero_padding
@@ -60,27 +60,27 @@ batch_size = 1024 * gpus
 n_epoch = 50
 n_hidden = 50
 
+# Define the shared model
+x = Sequential()
+x.add(Embedding(len(embeddings), embedding_dim,
+                weights=[embeddings], input_shape=(max_seq_length,), trainable=False))
+# CNN
+# x.add(Conv1D(250, kernel_size=5, activation='relu'))
+# x.add(GlobalMaxPool1D())
+# x.add(Dense(250, activation='relu'))
+# x.add(Dropout(0.3))
+# x.add(Dense(1, activation='sigmoid'))
+# LSTM
+x.add(LSTM(n_hidden))
+
+shared_model = x
+
 # The visible layer
 left_input = Input(shape=(max_seq_length,), dtype='int32')
 right_input = Input(shape=(max_seq_length,), dtype='int32')
 
-# The embedding layer
-embedding_layer = Embedding(len(embeddings), embedding_dim,
-                            weights=[embeddings], input_length=max_seq_length, trainable=False)
-
-# Embedded version of the inputs
-encoded_left = embedding_layer(left_input)
-encoded_right = embedding_layer(right_input)
-
-# Since this is a siamese network, both sides share the same LSTM
-shared_lstm = LSTM(n_hidden)
-
-left_output = shared_lstm(encoded_left)
-right_output = shared_lstm(encoded_right)
-
-malstm_distance = ManDist()([left_output, right_output])
-
-# Pack it all up into a model
+# Pack it all up into a Manhattan Distance model
+malstm_distance = ManDist()([shared_model(left_input), shared_model(right_input)])
 model = Model(inputs=[left_input, right_input], outputs=[malstm_distance])
 
 if gpus >= 2:
@@ -88,6 +88,7 @@ if gpus >= 2:
     model = tf.keras.utils.multi_gpu_model(model, gpus=gpus)
 model.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(), metrics=['accuracy'])
 model.summary()
+shared_model.summary()
 
 # Start trainings
 training_start_time = time()
