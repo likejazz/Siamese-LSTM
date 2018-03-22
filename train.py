@@ -105,8 +105,7 @@ model.save('./data/SiameseLSTM.h5')
 plt.subplot(211)
 plt.plot(malstm_trained.history['acc'])
 plt.plot(malstm_trained.history['val_acc'])
-plt.title(str(malstm_trained.history['val_acc'][-1])[:6] +
-          "(max: " + str(max(malstm_trained.history['val_acc']))[:6] + ")")
+plt.title('Model Accuracy')
 plt.ylabel('Accuracy')
 plt.xlabel('Epoch')
 plt.legend(['Train', 'Validation'], loc='upper left')
@@ -123,4 +122,6 @@ plt.legend(['Train', 'Validation'], loc='upper right')
 plt.tight_layout(h_pad=1.0)
 plt.savefig('./data/history-graph.png')
 
+print(str(malstm_trained.history['val_acc'][-1])[:6] +
+      "(max: " + str(max(malstm_trained.history['val_acc']))[:6] + ")")
 print("Done.")
